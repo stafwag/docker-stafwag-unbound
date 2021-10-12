@@ -23,9 +23,11 @@ If you want to use another port, you can edit ```etc/unbound/unbound.conf.d/inte
 #### Use unbound as an authoritative DNS server 
 
 To use unbound as an authoritative authoritive DNS server - a DNS server that hosts DNS zones - add your zones file ```etc/unbound/zones/```.
-Alternatively, you can also use a docker volume to mount ```/etc/unbound/zones/``` to your zone files.
 
-The entrypoint script will create a zone.conf file to serve the zones.
+During the creation of the image ```scripts/create_zone_config.sh``` is executed to create the zones configuration file.
+
+Alternatively, you can also use a docker volume to mount ```/etc/unbound/zones/``` to your zone files. And a volume mount for the ```zones.conf```
+configuration file.
 
 You can use subdirectories. The zone file needs to have ```$ORIGIN``` set to our zone origin.
 
@@ -38,6 +40,12 @@ If you want to use another vendor or you want to use the root DNS servers direct
 
 ```
 $ docker build -t stafwag/unbound . 
+```
+
+To use a different BASE_IMAGE, you can use the --build-arg BASE_IMAGE=your_base_image.
+
+```
+$ docker build --build-arg BASE_IMAGE=stafwag/debian:bullseye -t stafwag/unbound .
 ```
 
 ## Run
@@ -67,7 +75,12 @@ If you want to use unbound as an authoritative dns server you can use the steps 
 [staf@vicky ~]$ 
 ```
 
-#### Create the zone files
+```
+[staf@vicky stafnet]$ cd ~/docker/volumes/unbound/zones/stafnet
+[staf@vicky ~]$ 
+```
+
+#### Create the zone files 
 
 ##### Zone files
 
@@ -106,14 +119,48 @@ $ORIGIN 10.10.10.IN-ADDR.ARPA.
 Make sure that the volume directoy and zone files have the correct permissions.
 
 ```
-$ chmod 755 ~/docker/volumes/unbound/zones/stafnet/
-$ chmod 644 ~/docker/volumes/unbound/zones/stafnet/*
+$ sudo chown -R root:5000153 ~/docker/volumes/unbound/
+$ chmod 750 ~/docker/volumes/unbound/zones/stafnet/
+$ chmod 640 ~/docker/volumes/unbound/zones/stafnet/*
+```
+
+Create the zones.conf configuration file.
+
+```
+[staf@vicky stafnet]$ cd ~/github/stafwag/docker-stafwag-unbound/
+[staf@vicky docker-stafwag-unbound]$ 
+```
+
+The script will execute a ```chown``` and ```chmod``` on the generated ```zones.conf``` file and is excute with sudo for this reason.
+
+```
+[staf@vicky docker-stafwag-unbound]$ sudo scripts/create_zone_config.sh -f ~/docker/volumes/unbound/zones.conf -d ~/docker/volumes/unbound/zones/stafnet -p /etc/unbound/zones
+Processing: /home/staf/docker/volumes/unbound/zones/stafnet/stafnet.zone
+origin=stafnet.local
+Processing: /home/staf/docker/volumes/unbound/zones/stafnet/stafnet-rev.zone
+origin=1.168.192.IN-ADDR.ARPA
+[staf@vicky docker-stafwag-unbound]$ 
+```
+
+Verify the generated ```zones.conf```
+
+```
+[staf@vicky docker-stafwag-unbound]$ sudo cat ~/docker/volumes/unbound/zones.conf
+auth-zone:
+  name: stafnet.local
+  zonefile: /etc/unbound/zones/stafnet.zone
+
+auth-zone:
+  name: 1.168.192.IN-ADDR.ARPA
+  zonefile: /etc/unbound/zones/stafnet-rev.zone
+
+[staf@vicky docker-stafwag-unbound]$ 
 ```
 
 #### run the container
 
 ```
-$ docker run -d --rm --name myunbound -v ~/docker/volumes/unbound/zones/stafnet:/etc//unbound/zones/ -p 127.0.0.1:53:5353 -p 127.0.0.1:53:5353/udp stafwag/unbound
+$ docker run --rm --name myunbound -v ~/docker/volumes/unbound/zones/stafnet:/etc//unbound/zones/ -v ~/docker/volumes/unbound/zones.conf:/etc/unbound/unbound.conf.d/zones.conf -p 127.0.0.1:53:5353 -p 127.0.0.1:53:5353/udp stafwag/unbound
 ```
 
 #### test
