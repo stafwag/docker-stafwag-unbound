@@ -138,9 +138,9 @@ $ORIGIN 10.10.10.IN-ADDR.ARPA.
 Make sure that the volume directoy and zone files have the correct permissions.
 
 ```
+$ sudo chmod 750 ~/docker/volumes/unbound/zones/stafnet/
+$ sudo chmod 640 ~/docker/volumes/unbound/zones/stafnet/*
 $ sudo chown -R root:5000153 ~/docker/volumes/unbound/
-$ chmod 750 ~/docker/volumes/unbound/zones/stafnet/
-$ chmod 640 ~/docker/volumes/unbound/zones/stafnet/*
 ```
 
 Create the zones.conf configuration file.
