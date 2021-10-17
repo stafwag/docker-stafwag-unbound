@@ -87,15 +87,15 @@ If you want to use unbound as an authoritative dns server you can use the steps 
 stafnet.zone:
 
 ```
-$TTL	86400 ; 24 hours
+$TTL  86400 ; 24 hours
 $ORIGIN stafnet.local.
-@  1D  IN	 SOA @	root (
-			      20200322001 ; serial
-			      3H ; refresh
-			      15 ; retry
-			      1w ; expire
-			      3h ; minimum
-			     )
+@  1D  IN  SOA @  root (
+            20200322001 ; serial
+            3H ; refresh
+            15 ; retry
+            1w ; expire
+            3h ; minimum
+           )
 @  1D  IN  NS @ 
 
 stafmail IN A 10.10.10.10
@@ -180,10 +180,10 @@ $ docker run --rm --name myunbound -v ~/docker/volumes/unbound/zones/stafnet:/et
 ;; OPT PSEUDOSECTION:
 ; EDNS: version: 0, flags:; udp: 4096
 ;; QUESTION SECTION:
-;stafnet.local.			IN	SOA
+;stafnet.local.     IN  SOA
 
 ;; ANSWER SECTION:
-stafnet.local.		86400	IN	SOA	stafnet.local. root.stafnet.local. 3020452817 10800 15 604800 10800
+stafnet.local.    86400 IN  SOA stafnet.local. root.stafnet.local. 3020452817 10800 15 604800 10800
 
 ;; Query time: 0 msec
 ;; SERVER: 127.0.0.1#53(127.0.0.1)
