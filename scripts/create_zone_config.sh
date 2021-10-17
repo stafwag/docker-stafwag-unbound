@@ -1,8 +1,10 @@
 #!/bin/bash
 
-# creates zones.conf
-set -e
+set -o errexit
+set -o pipefail
+set -o nounset
 
+# creates zones.conf
 usage() {
   echo >&2
   echo >&2 "Usage: $(basename $0)"
@@ -14,16 +16,17 @@ usage() {
   echo >&2 "       -d Default: /etc/unbound/zones/"
   echo >&2 "          The zones data source files"
   echo >&2 "       -p Default: the realpath of zone files "
+  echo >&2 "       -s Skip chown/chmod"
   echo >&2
   exit 1
 }
 
-
 UnboundZoneCfg="/etc/unbound/unbound.conf.d/zones.conf"
 ZoneDataDir="/etc/unbound/zones/"
 ZonesPath=""
+SkipPerms=""
 
-while getopts “hd:f:p:” OPTION; do
+while getopts “hsd:f:p:” OPTION; do
   case $OPTION in
     f)
       UnboundZoneCfg=$OPTARG
@@ -33,6 +36,9 @@ while getopts “hd:f:p:” OPTION; do
       ;;
     p)
       ZonesPath=$(echo $OPTARG | sed -e 's@/$@@')
+      ;;
+    s)
+      SkipPerms=1
       ;;
     h)
       usage
@@ -77,7 +83,6 @@ while read zoneFile; do
     zoneFile="${ZonesPath}/${zoneBaseFile}"
   fi
 
-
   echo "auth-zone:" >> $UnboundZoneCfg
   echo "  name: $origin" >> $UnboundZoneCfg
   echo "  zonefile: $zoneFile" >> $UnboundZoneCfg
@@ -85,5 +90,7 @@ while read zoneFile; do
 
 done < <(find "$ZoneDataDir" -name "*.zone")
 
-chown root:5000153 $UnboundZoneCfg
-chmod 640 $UnboundZoneCfg
+if [ "$SkipPerms" != "1" ]; then
+  chown root:5000153 $UnboundZoneCfg
+  chmod 640 $UnboundZoneCfg
+fi
