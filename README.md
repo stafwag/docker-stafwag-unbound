@@ -20,6 +20,24 @@ $ cd docker-stafwag-unbound
 The default DNS port is set to ```5353``` this port is mapped with the docker command to the default port 53 (see below).
 If you want to use another port, you can edit ```etc/unbound/unbound.conf.d/interface.conf```.
 
+
+#### ```scripts/create_zone_config.sh``` helper script
+
+The ```create_zone_config.sh``` helper script, can we help you to the ```zones.conf``` configuration file.
+It's executed during the container build and creates the zones.conf from the datafiles in ```etc/unbound/zones```.
+
+If you want to use a docker volume or configmaps/persistent volumes on Kubernetes. You can use this script to
+generate the ```zones.conf``` a zones data directory.
+
+```create_zone_config.sh``` has following arguments:
+
+* **-f** Default: /etc/unbound/unbound.conf.d/zones.conf
+  The zones.conf file to create
+* **-d** Default: /etc/unbound/zones/
+  The zones data source files
+* **-p** Default: the realpath of zone files 
+* **-s** Skip chown/chmod
+
 #### Use unbound as an authoritative DNS server 
 
 To use unbound as an authoritative authoritive DNS server - a DNS server that hosts DNS zones - add your zones file ```etc/unbound/zones/```.
@@ -67,6 +85,7 @@ $ dig @127.0.0.1 www.wagemakers.be
 ### Authoritative dns server.
 
 If you want to use unbound as an authoritative dns server you can use the steps below.
+
 
 #### Create a directory with your zone files:
 
