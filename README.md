@@ -182,7 +182,7 @@ auth-zone:
 $ docker run --rm --name myunbound -v ~/docker/volumes/unbound/zones/stafnet:/etc//unbound/zones/ -v ~/docker/volumes/unbound/zones.conf:/etc/unbound/unbound.conf.d/zones.conf -p 127.0.0.1:53:5353 -p 127.0.0.1:53:5353/udp stafwag/unbound
 ```
 
-#### test
+#### Test
 
 ```
 [staf@vicky ~]$ dig @127.0.0.1 soa stafnet.local
@@ -208,6 +208,33 @@ stafnet.local.    86400 IN  SOA stafnet.local. root.stafnet.local. 3020452817 10
 ;; SERVER: 127.0.0.1#53(127.0.0.1)
 ;; WHEN: Sun Mar 22 19:41:09 CET 2020
 ;; MSG SIZE  rcvd: 83
+
+[staf@vicky ~]$ 
+```
+
+Test reverse lookup.
+
+```
+[staf@vicky ~]$ dig -x 10.10.10.10 @127.0.0.1
+
+; <<>> DiG 9.16.21 <<>> -x 10.10.10.10 @127.0.0.1
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 36250
+;; flags: qr aa rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 1232
+;; QUESTION SECTION:
+;10.10.10.10.in-addr.arpa.	IN	PTR
+
+;; ANSWER SECTION:
+10.10.10.10.in-addr.arpa. 86400	IN	PTR	stafmail.
+
+;; Query time: 0 msec
+;; SERVER: 127.0.0.1#53(127.0.0.1)
+;; WHEN: Tue Oct 19 19:51:47 CEST 2021
+;; MSG SIZE  rcvd: 75
 
 [staf@vicky ~]$ 
 ```
