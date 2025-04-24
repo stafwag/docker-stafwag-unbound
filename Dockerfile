@@ -1,4 +1,6 @@
-ARG BASE_IMAGE=debian:bullseye
+ARG BASE_IMAGE=debian:bookworm
+ARG DEBIAN_FRONTEND=noninteractive
+
 FROM $BASE_IMAGE
 LABEL maintainer "staf wagemakers <staf@wagemakers.be>"
 
