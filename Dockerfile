@@ -13,9 +13,12 @@ RUN apt-get install unbound -y
 RUN apt-get install unbound-anchor -y
 RUN apt-get install unbound-host -y
 RUN apt-get install dns-root-data -y
+RUN apt-get install openssl -y
 
 # get unbound key
 RUN unbound-anchor -v -4 || unbound-anchor -v -4
+# create the required control certificates
+RUN unbound-control-setup
 RUN chown root:unbound /etc/unbound/*.key
 RUN chmod 0650  /etc/unbound/*.key
 RUN chown root:unbound /etc/unbound/*.pem
