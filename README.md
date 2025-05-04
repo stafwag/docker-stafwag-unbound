@@ -23,7 +23,7 @@ If you want to use another port, you can edit ```etc/unbound/unbound.conf.d/inte
 
 #### ```scripts/create_zone_config.sh``` helper script
 
-The ```create_zone_config.sh``` helper script, can we help you to the ```zones.conf``` configuration file.
+The ```create_zone_config.sh``` helper script, can help you to create the ```zones.conf``` configuration file.
 It's executed during the container build and creates the zones.conf from the datafiles in ```etc/unbound/zones```.
 
 If you want to use a docker volume or configmaps/persistent volumes on Kubernetes. You can use this script to
@@ -63,7 +63,7 @@ $ docker build -t stafwag/unbound .
 To use a different BASE_IMAGE, you can use the --build-arg BASE_IMAGE=your_base_image.
 
 ```
-$ docker build --build-arg BASE_IMAGE=stafwag/debian:bullseye -t stafwag/unbound .
+$ docker build --build-arg BASE_IMAGE=stafwag/debian:bookworm -t stafwag/unbound .
 ```
 
 ## Run
